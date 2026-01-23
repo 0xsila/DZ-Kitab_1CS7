@@ -1,0 +1,41 @@
+services:
+  # Backend Service (Node.js)
+  - type: web
+    name: backend
+    env: node
+    rootDir: Copy/backend
+    plan: free # Optional: specify plan
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_SSL
+        value: "true"
+      # You must add these manually in the Render Dashboard after creation, or here if you dare commit them (don't)
+      - key: DB_HOST
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+
+  # Frontend Service (Static Site)
+  - type: web
+    name: frontend
+    env: static
+    rootDir: Copy/frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /**
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: backend
+          property: url

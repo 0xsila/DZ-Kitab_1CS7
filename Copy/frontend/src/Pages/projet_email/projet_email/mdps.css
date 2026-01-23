@@ -1,0 +1,50 @@
+/* Base de l'email */
+.email-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    color: #333;
+}
+
+.header {
+    background-color: #2A4074;
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+}
+
+.body {
+    padding: 30px;
+    line-height: 1.6;
+}
+
+/* Style du bouton */
+.button {
+    display: block;
+    width: fit-content;
+    margin: 30px auto;
+    padding: 15px 25px;
+    background-color: #2A4074;
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.link {
+    font-size: 12px;
+    color: #2A4074;
+    word-break: break-all;
+}
+
+.footer {
+    background-color: #f9f9f9;
+    padding: 15px;
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+}
