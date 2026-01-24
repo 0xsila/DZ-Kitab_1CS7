@@ -1,12 +1,15 @@
+
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+
 
 export default function Hero() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
+  const token = useSelector(state => state.auth.token);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && search.trim()) {
@@ -61,8 +64,14 @@ export default function Hero() {
               >
                 {t('view_catalog')}
               </button>
-              <button 
-                onClick={() => navigate('/profile', { state: { activeTab: "Mes annonces", subTab: "nouvelle" } })}
+              <button
+                onClick={() => {
+                  if (token) {
+                    navigate('/profile', { state: { activeTab: "Mes annonces", subTab: "nouvelle" } });
+                  } else {
+                    navigate('/connexion');
+                  }
+                }}
                 className="border-2 border-red-700 text-red-700 hover:bg-red-700 hover:text-white hover:shadow-xl hover:-translate-y-1 px-8 py-3 rounded-lg font-semibold transition-all duration-300"
               >
                 {t('post_ad')}
