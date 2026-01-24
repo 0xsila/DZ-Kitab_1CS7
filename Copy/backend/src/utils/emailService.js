@@ -1,4 +1,8 @@
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
+
+// Initialize Resend client (used if RESEND_API_KEY is set)
+const resendClient = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const createTransporter = () => {
   // Use 'gmail' service for better deliverability with App Passwords
@@ -132,12 +136,90 @@ const sendWelcomeEmail = async (email, firstName) => {
 
 const sendOtpEmail = async (email, firstName, otp) => {
   try {
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: `"DZ-Kitab Support" <${process.env.EMAIL_FROM}>`,
-      to: email,
-      subject: 'Your OTP Code',
-      html: `<!DOCTYPE html>
+    // Use Resend if available (for production/cloud), otherwise use Gmail (for local dev)
+    if (resendClient) {
+      await resendClient.emails.send({
+        from: process.env.EMAIL_FROM,
+        to: email,
+        subject: 'Code de vérification - DZ-Kitab',
+        html: `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code de vérification</title>
+    
+    <style>
+.email-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    color: #333;
+}
+
+.header {
+    background-color: #2A4074;
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+}
+
+.body {
+    padding: 30px;
+    line-height: 1.6;
+}
+
+.otp-code {
+    text-align: center;
+    margin: 30px 0;
+    padding: 15px 30px;
+    font-size: 32px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    color: #2A4074;
+    background-color: #f4f7ff;
+    border: 2px dashed #2A4074;
+    border-radius: 4px;
+}
+
+.footer {
+    background-color: #f9f9f9;
+    padding: 15px;
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+}
+    </style>
+</head>
+<body>
+
+    <div class="email-container">
+        <div class="header">
+            <h2>Bienvenue parmi nous !</h2>
+        </div>
+        <div class="body">
+            <p>Merci de vous être inscrit. Pour finaliser la création de votre compte, veuillez utiliser le code de confirmation suivant :</p>
+            <div class="otp-code">${otp}</div>
+            <p>Ce code est valable pendant 10 minutes. Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 DZ-kitab. Tous droits réservés.</p>
+        </div>
+    </div>
+    </body>
+</html>`
+      });
+    } else {
+      // Fallback to Gmail SMTP for local development
+      const transporter = createTransporter();
+      const mailOptions = {
+        from: `"DZ-Kitab Support" <${process.env.EMAIL_FROM}>`,
+        to: email,
+        subject: 'Your OTP Code',
+        html: `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -209,8 +291,9 @@ const sendOtpEmail = async (email, firstName, otp) => {
     </div>
     </body>
 </html>`
-    };
-    await transporter.sendMail(mailOptions);
+      };
+      await transporter.sendMail(mailOptions);
+    }
   } catch (error) {
     console.error('OTP email error:', error);
     throw new Error('Failed to send OTP',error);
