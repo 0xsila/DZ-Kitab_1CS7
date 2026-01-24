@@ -71,8 +71,8 @@ const createListing = async (req, res) => {
     for (let i = 0; i < 5; i++) {
       const fieldName = `photo_${i}`;
       if (req.files && req.files[fieldName] && req.files[fieldName][0]) {
-        // New file uploaded for this slot
-        photoUrls.push(`/uploads/books/${req.files[fieldName][0].filename}`);
+        // New file uploaded for this slot (Cloudinary path)
+        photoUrls.push(req.files[fieldName][0].path);
       } else if (req.body[fieldName]) {
         // Existing URL or external URL provided for this slot
         photoUrls.push(req.body[fieldName]);
@@ -336,8 +336,8 @@ const updateListing = async (req, res) => {
     for (let i = 0; i < 5; i++) {
       const fieldName = `photo_${i}`;
       if (req.files && req.files[fieldName] && req.files[fieldName][0]) {
-        // New file uploaded for this slot
-        newPhotos.push(`/uploads/books/${req.files[fieldName][0].filename}`);
+        // New file uploaded for this slot (Cloudinary path)
+        newPhotos.push(req.files[fieldName][0].path);
         hasSlotUpdate = true;
       } else if (req.body[fieldName]) {
         // Existing URL or external URL provided for this slot
