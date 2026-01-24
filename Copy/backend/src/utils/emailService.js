@@ -32,12 +32,7 @@ const createTransporterLegacy = () => {
 */
 
 const sendPasswordResetEmail = async (email, firstName, resetUrl) => {
-  const transporter = createTransporter();
-  const mailOptions = {
-    from: `"DZ-Kitab Support" <${process.env.EMAIL_FROM}>`,
-    to: email,
-    subject: 'Password Reset Request',
-    html: `<!DOCTYPE html>
+  const htmlContent = `<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -114,21 +109,46 @@ const sendPasswordResetEmail = async (email, firstName, resetUrl) => {
     </div>
 
 </body>
-</html>`
-  };
-  await transporter.sendMail(mailOptions);
+</html>`;
+
+  if (resendClient) {
+    await resendClient.emails.send({
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: 'Réinitialisation de mot de passe - DZ-Kitab',
+      html: htmlContent
+    });
+  } else {
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"DZ-Kitab Support" <${process.env.EMAIL_FROM}>`,
+      to: email,
+      subject: 'Password Reset Request',
+      html: htmlContent
+    });
+  }
 };
 
 const sendWelcomeEmail = async (email, firstName) => {
   try {
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: `"DZ-Kitab Support" <${process.env.EMAIL_FROM}>`,
-      to: email,
-      subject: 'Welcome to Our Platform!',
-      html: `<p>Hi ${firstName || 'there'},</p><p>Thank you for registering with us!</p>`
-    };
-    await transporter.sendMail(mailOptions);
+    const htmlContent = `<p>Hi ${firstName || 'there'},</p><p>Thank you for registering with us!</p>`;
+    
+    if (resendClient) {
+      await resendClient.emails.send({
+        from: process.env.EMAIL_FROM,
+        to: email,
+        subject: 'Bienvenue sur DZ-Kitab!',
+        html: htmlContent
+      });
+    } else {
+      const transporter = createTransporter();
+      await transporter.sendMail({
+        from: `"DZ-Kitab Support" <${process.env.EMAIL_FROM}>`,
+        to: email,
+        subject: 'Welcome to Our Platform!',
+        html: htmlContent
+      });
+    }
   } catch (error) {
     console.error('Welcome email error:', error);
   }
