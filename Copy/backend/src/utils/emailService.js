@@ -1,6 +1,20 @@
 const nodemailer = require('nodemailer');
 
 const createTransporter = () => {
+  // Use 'gmail' service for better deliverability with App Passwords
+  // This automatically handles host, port, and secure settings
+  return nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD
+    }
+  });
+};
+
+/* 
+// Legacy configuration (kept for reference)
+const createTransporterLegacy = () => {
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
@@ -11,6 +25,7 @@ const createTransporter = () => {
     }
   });
 };
+*/
 
 const sendPasswordResetEmail = async (email, firstName, resetUrl) => {
   const transporter = createTransporter();
