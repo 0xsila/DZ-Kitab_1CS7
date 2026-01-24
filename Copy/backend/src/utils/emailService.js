@@ -321,18 +321,13 @@ const sendOtpEmail = async (email, firstName, otp) => {
 };
 
 async function sendAdminPromotionRequest(adminEmail, targetUser, confirmationToken) {
-  const transporter = createTransporter();
   // IMPORTANT: For Render, backend URL is inferred or set via API_URL or RENDER_EXTERNAL_URL
   const apiUrl = process.env.VITE_API_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000';
   
   const approveLink = `${apiUrl}/api/admin/approve-promotion?token=${confirmationToken}&decision=approve`;
   const denyLink = `${apiUrl}/api/admin/approve-promotion?token=${confirmationToken}&decision=deny`;
 
-  const mailOptions = {
-    from: `"DZ-Kitab Admin" <${process.env.EMAIL_FROM}>`,
-    to: adminEmail,
-    subject: 'Action Required: Admin Promotion Request',
-    html: `
+  const htmlContent = `
       <h2>Admin Promotion Request</h2>
       <p>An admin has requested to promote the following user to Admin status:</p>
       <ul>
@@ -346,25 +341,33 @@ async function sendAdminPromotionRequest(adminEmail, targetUser, confirmationTok
         <a href="${denyLink}" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Deny</a>
       </div>
       <p>This link is valid for 24 hours.</p>
-    `
-  };
+    `;
 
-  await transporter.sendMail(mailOptions);
+  if (resendClient) {
+    await resendClient.emails.send({
+      from: process.env.EMAIL_FROM,
+      to: adminEmail,
+      subject: 'Action Required: Admin Promotion Request',
+      html: htmlContent
+    });
+  } else {
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"DZ-Kitab Admin" <${process.env.EMAIL_FROM}>`,
+      to: adminEmail,
+      subject: 'Action Required: Admin Promotion Request',
+      html: htmlContent
+    });
+  }
 }
 
 const sendAdminRequestEmail = async (userEmail, name, message, superAdminEmail, token, user) => {
-  const transporter = createTransporter();
   const apiUrl = process.env.VITE_API_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000';
   
   const approveLink = `${apiUrl}/api/admin/approve-promotion?token=${token}&decision=approve`;
   const denyLink = `${apiUrl}/api/admin/approve-promotion?token=${token}&decision=deny`;
 
-  const mailOptions = {
-    from: `"DZ-Kitab System" <${process.env.EMAIL_FROM}>`,
-    to: superAdminEmail,
-    replyTo: userEmail,
-    subject: `New Admin Access Request: ${name}`,
-    html: `
+  const htmlContent = `
       <h2>New Admin Access Request</h2>
       <p>A user has requested admin access via the Login Page form.</p>
       <ul>
@@ -384,9 +387,25 @@ const sendAdminRequestEmail = async (userEmail, name, message, superAdminEmail, 
         <a href="${denyLink}" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Deny</a>
       </div>
       <p><em>These links are valid for 24 hours.</em></p>
-    `
-  };
-  await transporter.sendMail(mailOptions);
+    `;
+
+  if (resendClient) {
+    await resendClient.emails.send({
+      from: process.env.EMAIL_FROM,
+      to: superAdminEmail,
+      subject: `New Admin Access Request: ${name}`,
+      html: htmlContent
+    });
+  } else {
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"DZ-Kitab System" <${process.env.EMAIL_FROM}>`,
+      to: superAdminEmail,
+      replyTo: userEmail,
+      subject: `New Admin Access Request: ${name}`,
+      html: htmlContent
+    });
+  }
 };
 
 module.exports = { sendPasswordResetEmail, sendWelcomeEmail, sendOtpEmail, sendAdminPromotionRequest, sendAdminRequestEmail };
