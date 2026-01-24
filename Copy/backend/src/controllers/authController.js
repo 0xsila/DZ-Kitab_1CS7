@@ -71,11 +71,13 @@ exports.register = async (req, res, next) => {
 
     // 5. Send OTP email
   try {
-  await sendOtpEmail(email, first_name, otp);
-} catch (error) {
-  console.error('Send OTP error in register:', error);
-  return res.status(500).json({ success: false, message: 'Failed to send OTP' });
-}
+    await sendOtpEmail(email, first_name, otp);
+  } catch (error) {
+    console.error('Send OTP error in register:', error);
+    // ROLLBACK: Delete the user if email sending fails so they can try again
+    await pool.query('DELETE FROM users WHERE id = ?', [result.insertId]);
+    return res.status(500).json({ success: false, message: 'Failed to send OTP. Please check your email address and try again.' });
+  }
 
 
     // 6. Send welcome email (optional)
