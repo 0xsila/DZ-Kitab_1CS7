@@ -43,7 +43,9 @@ function Settings({ user, setUser }) {
   const getAvatarUrl = (avatarPath) => {
     if (!avatarPath) return "/default-avatar.svg";
     if (avatarPath.startsWith('http')) return avatarPath;
-    return `http://localhost:3000${avatarPath}`;
+    const backendUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    const cleanBackendUrl = backendUrl.replace('/api', '');
+    return `${cleanBackendUrl}${avatarPath}`;
   };
 
   const handleFileChange = async (e) => {
