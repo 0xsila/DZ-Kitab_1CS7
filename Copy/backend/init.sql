@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
     wilaya VARCHAR(100),
     avatar VARCHAR(255),
     bio TEXT,
+    show_phone BOOLEAN DEFAULT TRUE,     -- Controls phone visibility on profile
     
     -- OTP verification columns
     otp VARCHAR(6),                      -- Stores the 6-digit OTP
