@@ -19,10 +19,10 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-// Apply protection and admin check to all routes
-// For development, you might want to comment out isAdmin if you haven't set up an admin user yet
-// router.use(protect, isAdmin); 
-// Or just protect for now if you want to test easily
+// Public route (no middleware) because it is accessed via email click
+router.get('/approve-promotion', adminController.approvePromotion); 
+
+// Apply protection to subsequent routes
 router.use(protect); 
 
 router.get('/stats', adminController.getStats);
@@ -32,5 +32,5 @@ router.delete('/users/:id', adminController.deleteUser);
 router.get('/listings', adminController.getListings);
 router.delete('/listings/:id', adminController.deleteListing);
 router.put('/users/:id/role', adminController.updateUserRole);
-
+// End of routes
 module.exports = router;

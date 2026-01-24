@@ -71,11 +71,21 @@ export default function Utilisateurs() {
   const handlePromote = async () => {
     if (!promoteId) return
     try {
-      await api.put(`/admin/users/${promoteId}/role`, { role: 'admin' })
-      setUsers(users.map(u => u.id === promoteId ? { ...u, role: 'admin' } : u))
+      const res = await api.put(`/admin/users/${promoteId}/role`, { role: 'admin' })
+      
+      // If it was a request (server returns specific message)
+      if (res.data.message && res.data.message.includes('Request')) {
+        setToastMessage(t('request_promotion_sent'))
+        // Mark as pending in local state
+        setUsers(users.map(u => u.id === promoteId ? { ...u, pendingPromotion: true } : u))
+      } else {
+        // Direct promotion (if old logic persisted or other role)
+        setUsers(users.map(u => u.id === promoteId ? { ...u, role: 'admin' } : u))
+        setToastMessage(t('user_promoted_success'))
+      }
+      
       setPromoteModalOpen(false)
       setPromoteId(null)
-      setToastMessage(t('user_promoted_success'))
       setShowToast(true)
     } catch (error) {
       console.error("Error promoting user:", error)
@@ -206,11 +216,17 @@ export default function Utilisateurs() {
                         className={`px-3 py-1 rounded-lg text-base font-medium border ${
                           u.role === "admin"
                             ? "border-[#811717] text-[#811717]"
-                            : "border-[#3A783E] text-[#3A783E]"
+                            : u.pendingPromotion 
+                              ? "border-yellow-600 text-yellow-600"
+                              : "border-[#3A783E] text-[#3A783E]"
                         }`}
                       >
-                        {u.role === "admin" ? t('role_admin') : t('role_user')}
-                        <span className="text-xs ml-1 text-gray-400">({u.role})</span>
+                        {u.role === "admin" 
+                          ? t('role_admin') 
+                          : u.pendingPromotion 
+                            ? t('pending_review')
+                            : t('role_user')}
+                        {!u.pendingPromotion && <span className="text-xs ml-1 text-gray-400">({u.role})</span>}
                       </span>
                     </td>
 

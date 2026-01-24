@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, CheckCircle, ShieldAlert } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, ShieldAlert, X } from "lucide-react";
 import Lecteurs from "../../assets/Lecteurs.svg";
 import api from "../../api/axios";
 import { login } from "../../store/slices/authSlice";
@@ -22,6 +22,12 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  
+  // Modal state for Admin Request
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [requestData, setRequestData] = useState({ name: "", email: "", message: "" });
+  const [requestLoading, setRequestLoading] = useState(false);
+  const [requestSuccess, setRequestSuccess] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,6 +76,26 @@ export default function AdminLogin() {
     }
   };
 
+  // Handle Admin Request Submit
+  const handleRequestSubmit = async (e) => {
+    e.preventDefault();
+    setRequestLoading(true);
+    try {
+      await api.post("/auth/request-admin-access", requestData);
+      setRequestSuccess(true);
+      setTimeout(() => {
+        setShowRequestModal(false);
+        setRequestSuccess(false);
+        setRequestData({ name: "", email: "", message: "" });
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      alert("Error sending request");
+    } finally {
+      setRequestLoading(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -86,7 +112,7 @@ export default function AdminLogin() {
       }}
       className="w-screen min-h-screen flex flex-col justify-start items-center px-4 py-8"
     >
-      <div className="w-full max-w-3xl bg-neutral-50/95 rounded-2xl shadow-lg p-8 md:p-14 flex flex-col items-center gap-6 overflow-auto border-t-4 border-[#2a4074]">
+      <div className="w-full max-w-3xl bg-neutral-50/95 rounded-2xl shadow-lg p-8 md:p-14 flex flex-col items-center gap-6 overflow-auto">
         <div className="flex flex-col items-center gap-2">
           <ShieldAlert className="w-12 h-12 text-[#2a4074]" />
           <h1 className="text-3xl md:text-4xl font-extrabold text-[#2a4074] text-center">
@@ -164,8 +190,98 @@ export default function AdminLogin() {
               t('login_button')
             )}
           </motion.button>
+          
+          <div className="text-center mt-2">
+            <button
+              type="button"
+              onClick={() => setShowRequestModal(true)}
+              className="text-[#2a4074] opacity-80 hover:opacity-100 hover:underline text-sm font-medium transition-all bg-transparent border-none cursor-pointer"
+            >
+              {t('become_admin')}
+            </button>
+          </div>
         </form>
       </div>
+
+      {/* Admin Request Modal */}
+      <AnimatePresence>
+        {showRequestModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            >
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-[#2a4074] text-white">
+                <h3 className="text-xl font-bold">{t('request_admin_title')}</h3>
+                <button 
+                  onClick={() => setShowRequestModal(false)}
+                  className="p-1 hover:bg-white/10 rounded-full transition"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {!requestSuccess ? (
+                <form onSubmit={handleRequestSubmit} className="p-6 flex flex-col gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('your_name')}</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#2a4074] focus:border-[#2a4074] outline-none transition"
+                      value={requestData.name}
+                      onChange={(e) => setRequestData({ ...requestData, name: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('your_email')}</label>
+                    <input
+                      type="email"
+                      required
+                      className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#2a4074] focus:border-[#2a4074] outline-none transition"
+                      value={requestData.email}
+                      onChange={(e) => setRequestData({ ...requestData, email: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('motivation_message')}</label>
+                    <textarea
+                      required
+                      rows="4"
+                      className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#2a4074] focus:border-[#2a4074] outline-none transition resize-none"
+                      value={requestData.message}
+                      onChange={(e) => setRequestData({ ...requestData, message: e.target.value })}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={requestLoading}
+                    className="w-full bg-[#2a4074] text-white py-3 rounded-xl font-semibold hover:bg-[#1e2e54] transition disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 mt-2"
+                  >
+                     {requestLoading && <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                     {t('send_request')}
+                  </button>
+                </form>
+              ) : (
+                <div className="p-8 flex flex-col items-center text-center gap-4">
+                  <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                    <CheckCircle size={32} />
+                  </div>
+                  <h4 className="text-xl font-bold text-gray-800">{t('request_sent_success')}</h4>
+                  <button
+                    onClick={() => setShowRequestModal(false)}
+                    className="mt-4 px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition"
+                  >
+                    {t('close')}
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

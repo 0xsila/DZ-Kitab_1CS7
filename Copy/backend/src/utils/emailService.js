@@ -15,7 +15,7 @@ const createTransporter = () => {
 const sendPasswordResetEmail = async (email, firstName, resetUrl) => {
   const transporter = createTransporter();
   const mailOptions = {
-    from: process.env.EMAIL_FROM,
+    from: `"DZ-Kitab Support" <${process.env.EMAIL_FROM}>`,
     to: email,
     subject: 'Password Reset Request',
     html: `<!DOCTYPE html>
@@ -104,7 +104,7 @@ const sendWelcomeEmail = async (email, firstName) => {
   try {
     const transporter = createTransporter();
     const mailOptions = {
-      from: process.env.EMAIL_FROM,
+      from: `"DZ-Kitab Support" <${process.env.EMAIL_FROM}>`,
       to: email,
       subject: 'Welcome to Our Platform!',
       html: `<p>Hi ${firstName || 'there'},</p><p>Thank you for registering with us!</p>`
@@ -119,7 +119,7 @@ const sendOtpEmail = async (email, firstName, otp) => {
   try {
     const transporter = createTransporter();
     const mailOptions = {
-      from: process.env.EMAIL_FROM,
+      from: `"DZ-Kitab Support" <${process.env.EMAIL_FROM}>`,
       to: email,
       subject: 'Your OTP Code',
       html: `<!DOCTYPE html>
@@ -202,4 +202,73 @@ const sendOtpEmail = async (email, firstName, otp) => {
   }
 };
 
-module.exports = { sendPasswordResetEmail, sendWelcomeEmail, sendOtpEmail };
+async function sendAdminPromotionRequest(adminEmail, targetUser, confirmationToken) {
+  const transporter = createTransporter();
+  // IMPORTANT: For Render, backend URL is inferred or set via API_URL
+  const apiUrl = process.env.VITE_API_URL || 'http://localhost:3000';
+  
+  const approveLink = `${apiUrl}/api/admin/approve-promotion?token=${confirmationToken}&decision=approve`;
+  const denyLink = `${apiUrl}/api/admin/approve-promotion?token=${confirmationToken}&decision=deny`;
+
+  const mailOptions = {
+    from: `"DZ-Kitab Admin" <${process.env.EMAIL_FROM}>`,
+    to: adminEmail,
+    subject: 'Action Required: Admin Promotion Request',
+    html: `
+      <h2>Admin Promotion Request</h2>
+      <p>An admin has requested to promote the following user to Admin status:</p>
+      <ul>
+        <li><strong>Name:</strong> ${targetUser.first_name} ${targetUser.last_name}</li>
+        <li><strong>Email:</strong> ${targetUser.email}</li>
+        <li><strong>ID:</strong> ${targetUser.id}</li>
+      </ul>
+      <p>Please click one of the buttons below:</p>
+      <div style="margin: 20px 0;">
+        <a href="${approveLink}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; margin-right: 10px; border-radius: 5px;">Approve</a>
+        <a href="${denyLink}" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Deny</a>
+      </div>
+      <p>This link is valid for 24 hours.</p>
+    `
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+const sendAdminRequestEmail = async (userEmail, name, message, superAdminEmail, token, user) => {
+  const transporter = createTransporter();
+  const apiUrl = process.env.VITE_API_URL || 'http://localhost:3000';
+  
+  const approveLink = `${apiUrl}/api/admin/approve-promotion?token=${token}&decision=approve`;
+  const denyLink = `${apiUrl}/api/admin/approve-promotion?token=${token}&decision=deny`;
+
+  const mailOptions = {
+    from: `"DZ-Kitab System" <${process.env.EMAIL_FROM}>`,
+    to: superAdminEmail,
+    replyTo: userEmail,
+    subject: `New Admin Access Request: ${name}`,
+    html: `
+      <h2>New Admin Access Request</h2>
+      <p>A user has requested admin access via the Login Page form.</p>
+      <ul>
+        <li><strong>Name:</strong> ${name} (Registered as ${user.first_name} ${user.last_name})</li>
+        <li><strong>Email:</strong> ${userEmail}</li>
+        <li><strong>User ID:</strong> ${user.id}</li>
+      </ul>
+      <h3>Motivation Message:</h3>
+      <p style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #2A4074; font-style: italic;">
+        "${message.replace(/\n/g, '<br>')}"
+      </p>
+      
+      <h3>Action Required:</h3>
+      <p>Do you want to grant Admin privileges to this user?</p>
+      <div style="margin: 20px 0;">
+        <a href="${approveLink}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; margin-right: 10px; border-radius: 5px;">Approve (Make Admin)</a>
+        <a href="${denyLink}" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Deny</a>
+      </div>
+      <p><em>These links are valid for 24 hours.</em></p>
+    `
+  };
+  await transporter.sendMail(mailOptions);
+};
+
+module.exports = { sendPasswordResetEmail, sendWelcomeEmail, sendOtpEmail, sendAdminPromotionRequest, sendAdminRequestEmail };

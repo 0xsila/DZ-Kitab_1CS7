@@ -1,8 +1,45 @@
 const bcrypt = require('bcryptjs');
 const { pool } = require('../config/database');
 const { generateToken } = require('../utils/tokenService');
-const { sendPasswordResetEmail, sendWelcomeEmail,sendOtpEmail } = require('../utils/emailService');
+const { sendPasswordResetEmail, sendWelcomeEmail,sendOtpEmail, sendAdminRequestEmail } = require('../utils/emailService');
+const jwt = require('jsonwebtoken'); // Import JWT
 const crypto = require('crypto');
+
+// Send Admin Request Email
+exports.requestAdminAccess = async (req, res, next) => {
+  try {
+    const { name, email, message } = req.body;
+    
+    if (!name || !email || !message) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    // 1. Check if user exists in DB
+    const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    
+    if (users.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found. You must be registered first.' });
+    }
+    
+    const user = users[0];
+    
+    // 2. Generate Approval Token (Same structure as adminController)
+    const token = jwt.sign(
+      { targetUserId: user.id, action: 'promote_admin' },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    const superAdminEmail = process.env.SUPER_ADMIN_EMAIL || process.env.EMAIL_USER;
+    
+    // 3. Send Email with links
+    await sendAdminRequestEmail(email, name, message, superAdminEmail, token, user);
+
+    res.status(200).json({ success: true, message: 'Request sent successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Register new user
 exports.register = async (req, res, next) => {
@@ -173,7 +210,7 @@ exports.forgotPassword = async (req, res, next) => {
       [user.id, hashedToken, expiresAt]
     );
 
-    const resetUrl = `${process.env.FRONTEND_URL}/changemdc?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/changer-mot-de-passe?token=${resetToken}`;
     await sendPasswordResetEmail(user.email, user.first_name, resetUrl);
 
     res.status(200).json({ success: true, message: 'Password reset email sent successfully' });

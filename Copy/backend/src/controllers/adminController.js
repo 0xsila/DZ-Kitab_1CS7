@@ -1,4 +1,6 @@
 const { pool } = require('../config/database');
+const jwt = require('jsonwebtoken');
+const { sendAdminPromotionRequest } = require('../utils/emailService');
 
 // Get Dashboard Stats
 exports.getStats = async (req, res, next) => {
@@ -118,6 +120,32 @@ exports.updateUserRole = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid role' });
     }
 
+    // Special flow for ADMIN promotion
+    if (role === 'admin') {
+      // 1. Get info about user being promoted
+      const [users] = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
+      if (users.length === 0) return res.status(404).json({ message: 'User not found' });
+      const targetUser = users[0];
+
+      // 2. Generate Approval Token
+      const token = jwt.sign(
+        { targetUserId: id, action: 'promote_admin' },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      // 3. Send Email to "Owner" (We assume it's the environment variable EMAIL_USER for now, or a specific SUPER_ADMIN_EMAIL)
+      const ownerEmail = process.env.SUPER_ADMIN_EMAIL || process.env.EMAIL_USER;
+      
+      await sendAdminPromotionRequest(ownerEmail, targetUser, token);
+
+      return res.status(200).json({ 
+        success: true, 
+        message: `Request to promote ${targetUser.first_name} to Admin has been sent to the Owner for approval.` 
+      });
+    }
+
+    // Normal flow for demotion or other roles
     await pool.query('UPDATE users SET role = ? WHERE id = ?', [role, id]);
     
     res.status(200).json({ 
@@ -126,5 +154,26 @@ exports.updateUserRole = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+// Handle Promotion Approval/Denial
+exports.approvePromotion = async (req, res) => {
+  try {
+    const { token, decision } = req.query;
+    
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.action !== 'promote_admin') throw new Error('Invalid token action');
+
+    if (decision === 'approve') {
+       await pool.query('UPDATE users SET role = ? WHERE id = ?', ['admin', decoded.targetUserId]);
+       res.send(`<h1>Approved!</h1><p>User ID ${decoded.targetUserId} is now an Admin.</p>`);
+    } else {
+       res.send(`<h1>Denied.</h1><p>No changes were made.</p>`);
+    }
+
+  } catch (error) {
+    res.status(400).send(`<h1>Error</h1><p>${error.message}</p>`);
   }
 };
