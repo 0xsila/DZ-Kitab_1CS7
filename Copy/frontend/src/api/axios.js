@@ -2,6 +2,9 @@ import axios from 'axios';
 
 // Helper to determine base URL
 const getBaseUrl = () => {
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return '/api';
+  }
   let url = import.meta.env.VITE_API_URL;
   if (!url) return '/api';
   // Handle case where Render provides just the host (without https://)

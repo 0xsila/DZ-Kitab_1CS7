@@ -204,8 +204,8 @@ const sendOtpEmail = async (email, firstName, otp) => {
 
 async function sendAdminPromotionRequest(adminEmail, targetUser, confirmationToken) {
   const transporter = createTransporter();
-  // IMPORTANT: For Render, backend URL is inferred or set via API_URL
-  const apiUrl = process.env.VITE_API_URL || 'http://localhost:3000';
+  // IMPORTANT: For Render, backend URL is inferred or set via API_URL or RENDER_EXTERNAL_URL
+  const apiUrl = process.env.VITE_API_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000';
   
   const approveLink = `${apiUrl}/api/admin/approve-promotion?token=${confirmationToken}&decision=approve`;
   const denyLink = `${apiUrl}/api/admin/approve-promotion?token=${confirmationToken}&decision=deny`;
@@ -236,7 +236,7 @@ async function sendAdminPromotionRequest(adminEmail, targetUser, confirmationTok
 
 const sendAdminRequestEmail = async (userEmail, name, message, superAdminEmail, token, user) => {
   const transporter = createTransporter();
-  const apiUrl = process.env.VITE_API_URL || 'http://localhost:3000';
+  const apiUrl = process.env.VITE_API_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000';
   
   const approveLink = `${apiUrl}/api/admin/approve-promotion?token=${token}&decision=approve`;
   const denyLink = `${apiUrl}/api/admin/approve-promotion?token=${token}&decision=deny`;
