@@ -247,8 +247,8 @@ exports.uploadAvatar = async (req, res, next) => {
       });
     }
 
-    // Construct file URL (relative path)
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    // Get Cloudinary URL
+    const avatarUrl = req.file.path;
 
     // Update user in database
     await pool.query(
