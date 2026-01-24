@@ -1,0 +1,22 @@
+# .gitignore (racine)
+# Fichiers/dossiers globaux à ignorer pour tout le projet
+.env
+.env.*
+*.env
+*.local
+*.log
+logs/
+node_modules/
+dist/
+build/
+.DS_Store
+.vscode/
+.idea/
+database/
+# Docker
+*.pid
+docker-compose.override.yml
+# Systèmes
+Thumbs.db
+*.swp
+*.swo
