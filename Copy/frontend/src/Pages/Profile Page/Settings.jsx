@@ -71,6 +71,13 @@ function Settings({ user, setUser }) {
       }
     } catch (error) {
       console.error("Error uploading avatar:", error);
+      if (error.response) {
+        console.error("Server responded with:", error.response.status, error.response.data);
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+      } else {
+        console.error("Request setup error:", error.message);
+      }
       setMessage({ type: "error", text: t('error_uploading_photo') });
     }
   };
