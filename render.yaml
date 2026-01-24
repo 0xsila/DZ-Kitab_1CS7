@@ -21,6 +21,23 @@ services:
         sync: false
       - key: DB_NAME
         sync: false
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        value: dzkitab1cs7@gmail.com
+      - key: SUPER_ADMIN_EMAIL
+        value: bilalbrahami025@gmail.com
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: frontend
+          property: url
 
   # Frontend Service (Static Site)
   - type: web
