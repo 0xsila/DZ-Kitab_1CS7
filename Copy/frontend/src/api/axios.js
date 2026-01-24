@@ -7,6 +7,12 @@ const getBaseUrl = () => {
   }
   let url = import.meta.env.VITE_API_URL;
   if (!url) return '/api';
+
+  // Fix for Render: If we get an internal hostname (like "backend-b1zf"), append .onrender.com
+  if (!url.includes('.') && !url.includes(':') && !url.startsWith('http')) {
+    url = `https://${url}.onrender.com`;
+  }
+  
   // Handle case where Render provides just the host (without https://)
   if (!url.startsWith('http')) {
     url = `https://${url}`;
