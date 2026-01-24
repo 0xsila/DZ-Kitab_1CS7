@@ -4,6 +4,10 @@ import axios from 'axios';
 const getBaseUrl = () => {
   let url = import.meta.env.VITE_API_URL;
   if (!url) return '/api';
+  // Handle case where Render provides just the host (without https://)
+  if (!url.startsWith('http')) {
+    url = `https://${url}`;
+  }
   if (url.endsWith('/')) url = url.slice(0, -1);
   if (!url.endsWith('/api')) url += '/api';
   return url;
