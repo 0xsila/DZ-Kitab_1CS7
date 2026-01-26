@@ -62,7 +62,7 @@ const LanguageSelection = ({ onLanguageSelect }) => {
 
         <div className="mt-12 text-sm text-gray-400">
           <p>Vous pourrez changer ultérieurement</p>
-          <p className="font-sans">يمكنك تغيير هذا لاحقا</p>
+          <p>يمكنك تغيير هذا لاحقا</p>
         </div>
       </div>
     </div>
