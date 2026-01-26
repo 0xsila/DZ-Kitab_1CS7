@@ -129,7 +129,15 @@ const createListing = async (req, res) => {
     // Create listing
     const [listing] = await pool.query(
       'INSERT INTO listings (book_id, user_id, book_condition, price, photos, description, accept_exchange) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [book[0].id, userId, condition, price, JSON.stringify(photoUrls), description || '', accept_exchange ? 1 : 0]
+      [
+        book[0].id,
+        userId,
+        condition,
+        price,
+        JSON.stringify(photoUrls),
+        description || '',
+        (accept_exchange === 1 || accept_exchange === '1' || accept_exchange === true || accept_exchange === 'true') ? 1 : 0
+      ]
     );
 
     // Check for wishlist matches and create notifications
