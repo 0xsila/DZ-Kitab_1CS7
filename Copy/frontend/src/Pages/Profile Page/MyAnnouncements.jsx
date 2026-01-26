@@ -127,6 +127,7 @@ function MyAnnouncements({ initialTab, user }) {
   }
 
   const handleEdit = (book) => {
+      console.log('DEBUG accept_exchange from backend:', book.accept_exchange);
     const conditionMap = {
       "new": t('condition_new'),
       "good": t('condition_good'),
