@@ -35,6 +35,12 @@ const SuccessModal = ({ title, message, onClose }) => {
 }
 
 function MyAnnouncements({ initialTab, user }) {
+    // Helper to robustly normalize accept_exchange to boolean
+    function normalizeAcceptExchange(val) {
+      if (val === true || val === 1 || val === "1" || val === "true") return true;
+      if (val === false || val === 0 || val === "0" || val === "false" || val === null || val === undefined) return false;
+      return Boolean(val);
+    }
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState(initialTab || "nouvelle")
@@ -175,7 +181,7 @@ function MyAnnouncements({ initialTab, user }) {
       condition: conditionMap[book.condition] || "Neuf",
       description: book.description || "", 
       price: book.price,
-      accept_exchange: [true, 1, "1", "true"].includes(book.accept_exchange),
+      accept_exchange: normalizeAcceptExchange(book.accept_exchange),
       photos: initialPhotos
     })
     
