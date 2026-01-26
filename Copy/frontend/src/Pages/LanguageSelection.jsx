@@ -36,7 +36,7 @@ const LanguageSelection = ({ onLanguageSelect }) => {
             className="w-full group relative flex items-center justify-between p-4 border-2 border-gray-100 rounded-2xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-300"
           >
             <div className="flex items-center gap-4">
-              <span className="text-3xl">🇫🇷</span>
+              <span className="text-3xl">FR</span>
               <div className="text-left">
                 <p className="font-bold text-gray-800 text-lg group-hover:text-blue-600 transition-colors">Français</p>
                 <p className="text-sm text-gray-400">Continuer en Français</p>
@@ -50,7 +50,7 @@ const LanguageSelection = ({ onLanguageSelect }) => {
             className="w-full group relative flex items-center justify-between p-4 border-2 border-gray-100 rounded-2xl hover:border-emerald-500 hover:bg-emerald-50 transition-all duration-300"
           >
             <div className="flex items-center gap-4">
-              <span className="text-3xl">🇸🇦</span>
+              <span className="text-3xl">AR</span>
               <div className="text-left">
                 <p className="font-bold text-gray-800 text-lg group-hover:text-emerald-600 transition-colors font-sans">العربية</p>
                 <p className="text-sm text-gray-400">متابعة باللغة العربية</p>
@@ -62,7 +62,7 @@ const LanguageSelection = ({ onLanguageSelect }) => {
 
         <div className="mt-12 text-sm text-gray-400">
           <p>Vous pourrez changer ultérieurement</p>
-          <p className="font-sans">يمكنك تغيير هذا لاحقاً في الإعدادات</p>
+          <p className="font-sans">يمكنك تغيير هذا لاحقا</p>
         </div>
       </div>
     </div>
