@@ -27,7 +27,7 @@ const LanguageSelection = ({ onLanguageSelect }) => {
           DZ-KITAB
         </h1>
         <p className="text-gray-500 mb-10 text-lg">
-          {t('choose_language')} / اختر لغتك
+          Choisissez une langue / اختر لغة
         </p>
 
         <div className="space-y-4">
@@ -36,7 +36,7 @@ const LanguageSelection = ({ onLanguageSelect }) => {
             className="w-full group relative flex items-center justify-between p-4 border-2 border-gray-100 rounded-2xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-300"
           >
             <div className="flex items-center gap-4">
-              <span className="text-3xl">🇫🇷</span>
+              <span className="text-3xl">FR</span>
               <div className="text-left">
                 <p className="font-bold text-gray-800 text-lg group-hover:text-blue-600 transition-colors">Français</p>
                 <p className="text-sm text-gray-400">Continuer en Français</p>
@@ -50,7 +50,7 @@ const LanguageSelection = ({ onLanguageSelect }) => {
             className="w-full group relative flex items-center justify-between p-4 border-2 border-gray-100 rounded-2xl hover:border-emerald-500 hover:bg-emerald-50 transition-all duration-300"
           >
             <div className="flex items-center gap-4">
-              <span className="text-3xl">🇩🇿</span>
+              <span className="text-3xl">AR</span>
               <div className="text-left">
                 <p className="font-bold text-gray-800 text-lg group-hover:text-emerald-600 transition-colors font-sans">العربية</p>
                 <p className="text-sm text-gray-400">متابعة باللغة العربية</p>
@@ -61,8 +61,8 @@ const LanguageSelection = ({ onLanguageSelect }) => {
         </div>
 
         <div className="mt-12 text-sm text-gray-400">
-          <p>You can change this later in settings</p>
-          <p className="font-sans">يمكنك تغيير هذا لاحقاً في الإعدادات</p>
+          <p>Vous pourrez changer ultérieurement</p>
+          <p>يمكنك تغيير هذا لاحقا</p>
         </div>
       </div>
     </div>

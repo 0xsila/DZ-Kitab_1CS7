@@ -35,6 +35,12 @@ const SuccessModal = ({ title, message, onClose }) => {
 }
 
 function MyAnnouncements({ initialTab, user }) {
+    // Helper to robustly normalize accept_exchange to boolean
+    function normalizeAcceptExchange(val) {
+      if (val === true || val === 1 || val === "1" || val === "true") return true;
+      if (val === false || val === 0 || val === "0" || val === "false" || val === null || val === undefined) return false;
+      return Boolean(val);
+    }
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState(initialTab || "nouvelle")
@@ -127,6 +133,7 @@ function MyAnnouncements({ initialTab, user }) {
   }
 
   const handleEdit = (book) => {
+      console.log('DEBUG accept_exchange from backend:', book.accept_exchange);
     const conditionMap = {
       "new": t('condition_new'),
       "good": t('condition_good'),
@@ -174,7 +181,7 @@ function MyAnnouncements({ initialTab, user }) {
       condition: conditionMap[book.condition] || "Neuf",
       description: book.description || "", 
       price: book.price,
-      accept_exchange: book.accept_exchange === 1 || book.accept_exchange === true,
+      accept_exchange: normalizeAcceptExchange(book.accept_exchange),
       photos: initialPhotos
     })
     
@@ -238,7 +245,7 @@ function MyAnnouncements({ initialTab, user }) {
     data.append('condition', conditionMapping[formData.condition] || "new")
     data.append('description', formData.description)
     data.append('price', formData.price)
-    data.append('accept_exchange', formData.accept_exchange)
+    data.append('accept_exchange', formData.accept_exchange ? 1 : 0)
 
     // Handle photos slots
     formData.photos.forEach((item, index) => {
@@ -374,7 +381,7 @@ function MyAnnouncements({ initialTab, user }) {
       publication_date: book.publication_date,
       price: `${book.price} DA`,
       condition: book.condition === 'new' ? t('condition_new') : book.condition === 'good' ? t('condition_good') : t('condition_used'),
-      accept_exchange: book.accept_exchange === 1 || book.accept_exchange === true,
+      accept_exchange: book.accept_exchange === 1 || book.accept_exchange === true || book.accept_exchange === "1" || book.accept_exchange === "true",
       status: book.status === 'active' ? t('status_available') : t('sold'),
       description: book.description || t('no_description'),
       recommendation: book.recommended_cursus ? `${t('recommended_for')} ${book.recommended_cursus}` : null,
@@ -861,9 +868,9 @@ function MyAnnouncements({ initialTab, user }) {
                   <div className="bg-white/95 backdrop-blur-sm text-blue-900 text-[10px] uppercase font-bold px-2.5 py-1 rounded-lg shadow-sm border border-blue-100/50">
                     {book.condition === 'new' ? t('condition_new') : book.condition === 'good' ? t('condition_good') : t('condition_used')}
                   </div>
-                  {(book.accept_exchange === 1 || book.accept_exchange === true) && (
-                     <div className="bg-amber-100/95 backdrop-blur-md text-amber-800 text-[10px] uppercase font-bold px-2.5 py-1 rounded-lg shadow-sm border border-amber-200/50 flex items-center gap-1">
-                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                  {book.accept_exchange === 1 && (
+                    <div className="bg-amber-100/95 backdrop-blur-md text-amber-800 text-[10px] uppercase font-bold px-2.5 py-1 rounded-lg shadow-sm border border-amber-200/50 flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z" />
                       </svg>
                       {t('exchange_available')}
@@ -901,7 +908,7 @@ function MyAnnouncements({ initialTab, user }) {
                       e.stopPropagation()
                       handleMarkAsSold(book)
                     }}
-                    className="flex-1 px-3 py-2 rounded-lg transition-all duration-300 ease-in-out bg-red-50 text-red-700 hover:bg-red-200 text-xs font-bold"
+                    className="flex-1 px-3 py-2 rounded-lg transition-all duration-300 ease-in-out bg-[#F59E0B]/10 text-[#F59E0B] hover:bg-[#d97706] hover:text-white text-xs font-bold"
                   >
                     {t('mark_sold')}
                   </button>

@@ -249,13 +249,15 @@ export default function Utilisateurs() {
                         <ShieldCheck className="w-5 h-5" />
                       </button>
                       
-                      <button 
-                        onClick={() => confirmDelete(u.id)}
-                        className="p-2 rounded-lg transition-all duration-300 group bg-white text-red-500 hover:bg-red-500 hover:text-white shadow-sm"
-                        title={t('delete_user_title')}
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                      {u.role !== 'admin' && (
+                        <button 
+                          onClick={() => confirmDelete(u.id)}
+                          className="p-2 rounded-lg transition-all duration-300 group bg-white text-red-500 hover:bg-red-500 hover:text-white shadow-sm"
+                          title={t('delete_user_title')}
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      )}
                       </div>
                     </td>
                   </tr>
