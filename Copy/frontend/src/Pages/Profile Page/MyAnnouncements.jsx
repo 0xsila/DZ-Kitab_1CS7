@@ -375,7 +375,7 @@ function MyAnnouncements({ initialTab, user }) {
       publication_date: book.publication_date,
       price: `${book.price} DA`,
       condition: book.condition === 'new' ? t('condition_new') : book.condition === 'good' ? t('condition_good') : t('condition_used'),
-      accept_exchange: book.accept_exchange === 1 || book.accept_exchange === true,
+      accept_exchange: book.accept_exchange === 1 || book.accept_exchange === true || book.accept_exchange === "1" || book.accept_exchange === "true",
       status: book.status === 'active' ? t('status_available') : t('sold'),
       description: book.description || t('no_description'),
       recommendation: book.recommended_cursus ? `${t('recommended_for')} ${book.recommended_cursus}` : null,
@@ -862,7 +862,7 @@ function MyAnnouncements({ initialTab, user }) {
                   <div className="bg-white/95 backdrop-blur-sm text-blue-900 text-[10px] uppercase font-bold px-2.5 py-1 rounded-lg shadow-sm border border-blue-100/50">
                     {book.condition === 'new' ? t('condition_new') : book.condition === 'good' ? t('condition_good') : t('condition_used')}
                   </div>
-                  {(book.accept_exchange === 1 || book.accept_exchange === true) && (
+                  {(book.accept_exchange === 1 || book.accept_exchange === true || book.accept_exchange === "1" || book.accept_exchange === "true") && (
                      <div className="bg-amber-100/95 backdrop-blur-md text-amber-800 text-[10px] uppercase font-bold px-2.5 py-1 rounded-lg shadow-sm border border-amber-200/50 flex items-center gap-1">
                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z" />
