@@ -908,7 +908,7 @@ function MyAnnouncements({ initialTab, user }) {
                       e.stopPropagation()
                       handleMarkAsSold(book)
                     }}
-                    className="flex-1 px-3 py-2 rounded-lg transition-all duration-300 ease-in-out bg-[#F59E0B]/10 text-[#F59E0B] hover:bg-[#F59E0B]/20 hover:text-white text-xs font-bold"
+                    className="flex-1 px-3 py-2 rounded-lg transition-all duration-300 ease-in-out bg-[#F59E0B]/10 text-[#F59E0B] hover:bg-[#d97706] hover:text-white text-xs font-bold"
                   >
                     {t('mark_sold')}
                   </button>
