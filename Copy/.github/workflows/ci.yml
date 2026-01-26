@@ -78,7 +78,4 @@ jobs:
     steps:
       - name: Deploy to Production
         run: echo "Deploying to production..."
-        # Add your deployment steps here. Examples:
-        # - SSH to VPS and pull docker images
-        # - Deploy to Vercel/Netlify (for frontend)
-        # - Deploy to AWS/Azure/GCP
+       
