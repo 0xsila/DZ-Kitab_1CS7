@@ -245,7 +245,7 @@ function MyAnnouncements({ initialTab, user }) {
     data.append('condition', conditionMapping[formData.condition] || "new")
     data.append('description', formData.description)
     data.append('price', formData.price)
-    data.append('accept_exchange', formData.accept_exchange)
+    data.append('accept_exchange', formData.accept_exchange ? 1 : 0)
 
     // Handle photos slots
     formData.photos.forEach((item, index) => {
