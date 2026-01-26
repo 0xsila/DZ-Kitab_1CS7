@@ -175,7 +175,7 @@ function MyAnnouncements({ initialTab, user }) {
       condition: conditionMap[book.condition] || "Neuf",
       description: book.description || "", 
       price: book.price,
-      accept_exchange: book.accept_exchange === true || book.accept_exchange === 1 || book.accept_exchange === "1" || book.accept_exchange === "true",
+      accept_exchange: [true, 1, "1", "true"].includes(book.accept_exchange),
       photos: initialPhotos
     })
     
