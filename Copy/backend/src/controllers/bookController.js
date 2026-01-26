@@ -420,7 +420,9 @@ const updateListing = async (req, res) => {
     const finalPrice = price || existing[0].price;
     const finalStatus = status || existing[0].status;
     const finalDescription = description !== undefined ? description : (existing[0].description || '');
-    const finalAcceptExchange = accept_exchange !== undefined ? (accept_exchange ? 1 : 0) : existing[0].accept_exchange;
+    const finalAcceptExchange = accept_exchange !== undefined
+      ? (accept_exchange === 1 || accept_exchange === '1' || accept_exchange === true || accept_exchange === 'true' ? 1 : 0)
+      : existing[0].accept_exchange;
 
     await pool.query(
       'UPDATE listings SET book_id=?, book_condition=?, price=?, photos=?, description=?, status=?, accept_exchange=?, updated_at=NOW() WHERE id=?',
